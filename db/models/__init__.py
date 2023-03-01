@@ -1,4 +1,4 @@
-from .user import users, metadata
+from db.models.user import User, Base
 
 
-__all__ = ['users', 'metadata']
+__all__ = ['User', 'Base']
