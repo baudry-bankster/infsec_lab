@@ -6,6 +6,6 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'users'
     username = Column('username', String(50), primary_key=True)
-    password = Column('password', String(50), nullable=False)
-    code = Column('code', String(50), nullable=True)
+    password = Column('password', String(90), nullable=False)
+    code = Column('code', String(90), nullable=True)
     diffie_hellman_key = Column('diffie_hellman_key', String(50), nullable=True)

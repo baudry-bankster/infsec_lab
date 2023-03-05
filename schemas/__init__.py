@@ -1,5 +1,5 @@
-from .signIn import CodeRequest, CodeRespond, SignInRequest
+from .signIn import CodeRequest, CodeResponse, SignInRequest
 from .signUp import SignUpRequest
 
 
-__all__ = ['CodeRequest', 'CodeRespond', 'SignInRequest', 'SignUpRequest']
+__all__ = ['CodeRequest', 'CodeResponse', 'SignInRequest', 'SignUpRequest']

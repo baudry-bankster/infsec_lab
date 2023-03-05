@@ -2,6 +2,18 @@ import requests
 from hashlib import sha256
 from tkinter.messagebox import showinfo
 from exceptions import UserExists
+from random import randint
+# from tools.diffie_hellman import fast_pow
+def fast_pow(number: int, exp: int, mod: int) -> int:
+    result = 1
+    while exp:
+        if exp & 1:
+            result = result * number % mod
+        exp >>= 1
+        number = number * number % mod
+    return result
+
+
 
 def registration(username: str, password: str):
     result = requests.post('http://127.0.0.1:8000/signup', data={'username': username, 'password': password})
@@ -55,10 +67,31 @@ def auth(username: str, code: str, password: str):
         print('User has been authenticated')
         showinfo('info', 'User has been authenticated')
 
+#get_user_param_diffie_hellman
+
+def get_A(bit: int, username: str):
+
+    print(bit)
+    print(username)
+    result = requests.get('http://127.0.0.1:8000/get_diffie_params', params={'bit': bit,'username': username})
+    print(result.request.url)
+    
+    data = result.json()
+    b = randint(10000, 10000)
+    print(data)
+    B = fast_pow(data['g'], b, data['p'])
+    print('2')
+    K = fast_pow(data['A'], b, data['p'])
+    print('Users key: {}'.format(K))
+
+    result = requests.get('http://127.0.0.1:8000/get_user_param_diffie_hellman', params={'B': B,'username': username})
+    showinfo('info', 'Users key: {}'.format(K))
+
 
 def full_auth(username: str, password: str):
     try:
         code = get_code(username)
         auth(username, code, password)
+        get_A(70, username)
     except:
         showinfo('info', 'Error!\nRepeat again')

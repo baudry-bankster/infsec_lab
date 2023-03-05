@@ -7,13 +7,17 @@ from schemas import SignUpRequest
 
 from hashlib import sha256
 
+from exceptions import UserExists
+
 
 async def register_user(credentials: SignUpRequest):
     credentials.password = sha256(credentials.password.encode()).hexdigest()
-    async with get_session() as session:
-        print('12')
-        await session.execute(insert(User), [credentials.__dict__])
-        await session.commit()
+    try:
+        async with get_session() as session:
+            await session.execute(insert(User), [credentials.__dict__])
+            await session.commit()
+    except IntegrityError:
+        raise UserExists
 
 
 

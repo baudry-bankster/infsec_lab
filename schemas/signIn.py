@@ -2,11 +2,11 @@ from pydantic import BaseModel, Field
 
 
 class CodeRequest(BaseModel):
-    login: str
+    username: str
 
 
 
-class CodeRespond(BaseModel):
+class CodeResponse(BaseModel):
     code: str
 
 

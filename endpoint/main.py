@@ -45,7 +45,7 @@ async def signin(credentials: CodeRequest):
     try:
         code = await get_code(credentials.username)
     except UserNotFound as err:
-        return JSONResponse({'message': str(err)}, status_code=status.HTTP_400_BAD_REQUEST)
+        return JSONResponse({'message': str(err)}, status_code=status.HTTP_404_NOT_FOUND)
     return JSONResponse({'code': code}, status_code=status.HTTP_200_OK)
 
 
@@ -53,21 +53,21 @@ async def signin(credentials: CodeRequest):
 @app.get('/get_diffie_params',
          status_code=status.HTTP_200_OK,
          response_class=Response)
-async def get_A(bit: int, user: str):
-        p = get_safe_prime(70)
-        g = get_primitive_root(70, p)
+async def get_A(bit: int, username: str):
+        p = get_safe_prime(bit)
+        g = get_primitive_root(bit, p)
         a = randint(10000, 10000)
         A = fast_pow(g, a, p)
-        print(f'Created: p:{p} a:{a} g:{g}')
-        DATABASE_IN[user] = {'p': p, 'A': A, 'g': g, 'a': a}
+        print(f'Created: p:{p} a:{a} g:{g} for user {username}')
+        DATABASE_IN[username] = {'p': p, 'A': A, 'g': g, 'a': a}
         return JSONResponse({'p': p, 'A': A, 'g': g}, status_code=status.HTTP_200_OK)
 
 
 @app.get('/get_user_param_diffie_hellman',
          status_code=status.HTTP_200_OK,
          response_class=Response)
-async def get_A(B: int, user: str):
-        data = DATABASE_IN[user]
+async def get_K(B: int, username: str):
+        data = DATABASE_IN[username]
         k = fast_pow(B, data['a'], data['p'])
-        print(f'Server key = {k}')
-        DATABASE_IN[user]['k'] = k
+        print(f'Server key = {k} for username {username}')
+        DATABASE_IN[username]['k'] = k

@@ -16,7 +16,6 @@ class Settings(BaseSettings):
 
     @property
     def get_database_url(self) -> str:
-        print(f'postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@localhost/{self.POSTGRES_DB}')
         return f'postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@localhost/{self.POSTGRES_DB}'
 
 
