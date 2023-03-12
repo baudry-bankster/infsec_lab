@@ -7,6 +7,7 @@ from schemas.signUp import SignUpRequest
 from schemas.signIn import SignInRequest, CodeResponse, CodeRequest
 from exceptions import *
 from tools.diffie_hellman import get_primitive_root, get_safe_prime, fast_pow
+from tools.rc4 import encrypt
 
 
 app = FastAPI()
@@ -58,7 +59,7 @@ async def get_A(bit: int, username: str):
         g = get_primitive_root(bit, p)
         a = randint(10000, 10000)
         A = fast_pow(g, a, p)
-        print(f'Created: p:{p} a:{a} g:{g} for user {username}')
+        # print(f'Created: p:{p} a:{a} g:{g} for user {username}')
         DATABASE_IN[username] = {'p': p, 'A': A, 'g': g, 'a': a}
         return JSONResponse({'p': p, 'A': A, 'g': g}, status_code=status.HTTP_200_OK)
 
@@ -69,5 +70,18 @@ async def get_A(bit: int, username: str):
 async def get_K(B: int, username: str):
         data = DATABASE_IN[username]
         k = fast_pow(B, data['a'], data['p'])
-        print(f'Server key = {k} for username {username}')
+        # print(f'Server key = {k} for username {username}')
         DATABASE_IN[username]['k'] = k
+
+
+@app.get('/send_secret_text',
+         status_code=status.HTTP_200_OK,
+         response_class=Response
+            )
+async def send_message(username: str, enc_message: str):
+      text = encrypt(enc_message, DATABASE_IN[username]['k'])
+    #   answer = 'Server got text enc {}'.format(enc_message)
+    #   print(answer)
+      answer = 'Server got text {}'.format(text)
+    #   print(answer)
+      return JSONResponse({'text': encrypt(answer, DATABASE_IN[username]['k'])}, status_code=status.HTTP_200_OK)
